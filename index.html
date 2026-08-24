@@ -1,4 +1,4 @@
-here<!DOCTYPE html>
+Enter<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -28,7 +28,7 @@ here<!DOCTYPE html>
 
         <!-- صندوق المحادثة -->
         <div id="chat-box" class="border border-green-500/20 p-4 rounded bg-black/50 h-80 overflow-y-auto mb-4 space-y-3 text-sm">
-            <div class="text-green-300">[BLACK MATRIX]: جاهز لاستقبال الأوامر والنصوص مع تفعيل الذاكرة السياقية.</div>
+            <div class="text-green-300">[BLACK MATRIX]: جاهز لاستقبال الأوامر والنصوص.</div>
         </div>
 
         <!-- نموذج الإرسال -->
@@ -72,12 +72,16 @@ here<!DOCTYPE html>
                     reply = data.choices[0].message.content;
                     conversationHistory.push({ role: "assistant", content: reply });
                 } else if (data.error) {
-                    reply = "خطأ: " + data.error;
+                    // معالجة الخطأ بوضوح سواء كان نصاً أو كود برمجياً
+                    let errDetails = typeof data.error === 'object' ? (data.error.message || JSON.stringify(data.error)) : data.error;
+                    reply = "خطأ من النظام: " + errDetails;
+                } else {
+                    reply = "استجابة غير معروفة: " + JSON.stringify(data);
                 }
 
                 chatBox.innerHTML += `<div class="text-green-300"><strong>[BLACK MATRIX]:</strong> ${reply}</div>`;
             } catch (err) {
-                chatBox.innerHTML += `<div class="text-red-400"><strong>[خطأ]:</strong> تعذر الاتصال بالسيرفر.</div>`;
+                chatBox.innerHTML += `<div class="text-red-400"><strong>[خطأ]:</strong> تعذر الاتصال بالسيرفر. (${err.message})</div>`;
             } finally {
                 sendBtn.disabled = false;
                 sendBtn.innerText = 'إرسال';
