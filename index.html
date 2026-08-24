@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+here<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -17,8 +17,8 @@
                 <p class="text-lg font-bold text-green-400">نشط (Online)</p>
             </div>
             <div class="border border-green-500/20 p-4 rounded bg-black/50">
-                <p class="text-xs text-gray-400">الذاكرة السحابية</p>
-                <p class="text-lg font-bold text-green-400">غير محدودة</p>
+                <p class="text-xs text-gray-400">الذاكرة التفاعلية</p>
+                <p class="text-lg font-bold text-green-400">مُفعلة (Active)</p>
             </div>
             <div class="border border-green-500/20 p-4 rounded bg-black/50">
                 <p class="text-xs text-gray-400">محرك الذكاء الاصطناعي</p>
@@ -28,7 +28,7 @@
 
         <!-- صندوق المحادثة -->
         <div id="chat-box" class="border border-green-500/20 p-4 rounded bg-black/50 h-80 overflow-y-auto mb-4 space-y-3 text-sm">
-            <div class="text-green-300">[BLACK MATRIX]: جاهز لاستقبال الأوامر والنصوص.</div>
+            <div class="text-green-300">[BLACK MATRIX]: جاهز لاستقبال الأوامر والنصوص مع تفعيل الذاكرة السياقية.</div>
         </div>
 
         <!-- نموذج الإرسال -->
@@ -44,6 +44,7 @@
         const input = document.getElementById('user-input');
         const chatBox = document.getElementById('chat-box');
         const sendBtn = document.getElementById('send-btn');
+        let conversationHistory = [];
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -56,17 +57,20 @@
             sendBtn.innerText = 'جاري التفكير...';
             chatBox.scrollTop = chatBox.scrollHeight;
 
+            conversationHistory.push({ role: "user", content: prompt });
+
             try {
                 const res = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: prompt })
+                    body: JSON.stringify({ messages: conversationHistory })
                 });
                 const data = await res.json();
                 
                 let reply = "حدث خطأ في استجابة النظام.";
                 if (data.choices && data.choices[0] && data.choices[0].message) {
                     reply = data.choices[0].message.content;
+                    conversationHistory.push({ role: "assistant", content: reply });
                 } else if (data.error) {
                     reply = "خطأ: " + data.error;
                 }
