@@ -73,9 +73,10 @@
           chatBox.innerHTML += `<div class="text-green-400"><strong>[BLACK MATRIX]:</strong> ${aiReply}</div>`;
           conversationHistory.push({ role: "assistant", content: aiReply });
         } else if (data.error) {
-          chatBox.innerHTML += `<div class="text-red-400"><strong>[BLACK MATRIX]:</strong> خطأ: ${data.error}</div>`;
+          const errDetail = typeof data.error === 'object' ? (data.error.message || JSON.stringify(data.error)) : data.error;
+          chatBox.innerHTML += `<div class="text-red-400"><strong>[BLACK MATRIX]:</strong> خطأ: ${errDetail}</div>`;
         } else {
-          chatBox.innerHTML += `<div class="text-red-400"><strong>[BLACK MATRIX]:</strong> حدث خطأ غير متوقع.</div>`;
+          chatBox.innerHTML += `<div class="text-red-400"><strong>[BLACK MATRIX]:</strong> استجابة غير متوقعة من السيرفر.</div>`;
         }
       } catch (err) {
         chatBox.innerHTML += `<div class="text-red-400"><strong>[BLACK MATRIX]:</strong> خطأ في الاتصال بالسيرفر.</div>`;
