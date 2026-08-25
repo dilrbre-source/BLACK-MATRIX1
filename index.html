@@ -33,7 +33,7 @@
 
     <!-- نموذج الإرسال -->
     <form id="ai-form" class="flex gap-2">
-      <input type="text" id="user-input" placeholder="اكتب أمرك أو سؤالك هنا..." class="flex-1 bg-black border border-green-500/30 rounded px-4 py-2 text-white focus:outline-none focus:border-green-400">
+      <input type="text" id="user-input" placeholder="اكتب أمرك أو سؤالك هنا..." class="flex-1 bg-black border border-green-500/30 rounded px-4 py-2 text-white focus:outline-none">
       <button type="submit" id="send-btn" class="bg-green-600 hover:bg-green-500 text-black font-bold px-6 py-2 rounded transition-colors">إرسال</button>
     </form>
   </div>
@@ -70,16 +70,51 @@
         
         if (data.choices && data.choices[0] && data.choices[0].message) {
           const aiReply = data.choices[0].message.content;
-          chatBox.innerHTML += `<div class="text-green-400"><strong>[BLACK MATRIX]:</strong> ${aiReply}</div>`;
+          const replyDiv = document.createElement('div');
+          replyDiv.className = 'text-green-400';
+          const strong = document.createElement('strong');
+          strong.textContent = '[BLACK MATRIX]: ';
+          replyDiv.appendChild(strong);
+          replyDiv.appendChild(document.createTextNode(aiReply));
+          chatBox.appendChild(replyDiv);
+
           conversationHistory.push({ role: "assistant", content: aiReply });
         } else if (data.error) {
-          const errDetail = typeof data.error === 'object' ? (data.error.message || JSON.stringify(data.error)) : data.error;
-          chatBox.innerHTML += `<div class="text-red-400"><strong>[BLACK MATRIX]:</strong> خطأ: ${errDetail}</div>`;
+          const errDetail = (data.error && typeof data.error === 'object')
+            ? (data.error.message || JSON.stringify(data.error))
+            : String(data.error);
+
+          const errDiv = document.createElement('div');
+          errDiv.className = 'text-red-400';
+
+          const label = document.createElement('strong');
+          label.textContent = '[BLACK MATRIX]: ';
+          errDiv.appendChild(label);
+
+          errDiv.appendChild(document.createTextNode(`خطأ: ${errDetail}`));
+          chatBox.appendChild(errDiv);
         } else {
-          chatBox.innerHTML += `<div class="text-red-400"><strong>[BLACK MATRIX]:</strong> استجابة غير متوقعة من السيرفر.</div>`;
+          const infoDiv = document.createElement('div');
+          infoDiv.className = 'text-red-400';
+
+          const label = document.createElement('strong');
+          label.textContent = '[BLACK MATRIX]: ';
+          infoDiv.appendChild(label);
+
+          infoDiv.appendChild(document.createTextNode('استجابة غير متوقعة من السيرفر.'));
+          chatBox.appendChild(infoDiv);
         }
       } catch (err) {
-        chatBox.innerHTML += `<div class="text-red-400"><strong>[BLACK MATRIX]:</strong> خطأ في الاتصال بالسيرفر.</div>`;
+        const catchDiv = document.createElement('div');
+        catchDiv.className = 'text-red-400';
+
+        const label = document.createElement('strong');
+        label.textContent = '[BLACK MATRIX]: ';
+        catchDiv.appendChild(label);
+
+        const msg = (err && err.message) ? `خطأ في الاتصال بالسيرفر. (${err.message})` : 'خطأ في الاتصال بالسيرفر.';
+        catchDiv.appendChild(document.createTextNode(msg));
+        chatBox.appendChild(catchDiv);
       }
 
       sendBtn.disabled = false;
